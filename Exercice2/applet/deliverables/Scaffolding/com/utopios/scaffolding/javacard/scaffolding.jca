@@ -1,0 +1,412 @@
+// converted by version  [v24.1]
+// on Thu Jan 23 16:42:27 CET 2025
+
+.package com/utopios/scaffolding {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x1;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.9;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x1:0x1 Scaffolding;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef 0.9 Scaffolding/pin;
+		// 1
+		instanceFieldRef byte[] Scaffolding/pukValue;
+		// 2
+		instanceFieldRef byte Scaffolding/pukTriesRemaining;
+		// 3
+		instanceFieldRef boolean Scaffolding/cardBlocked;
+		// 4
+		staticMethodRef 0.9.0(BB)V;		// javacard/framework/OwnerPIN.<init>(BB)V
+		// 5
+		staticMethodRef Scaffolding/<init>()V;
+		// 6
+		virtualMethodRef 0.9.8([BSB)V;		// update([BSB)V
+		// 7
+		.classRef Scaffolding;
+		// 8
+		staticMethodRef 0.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 9
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 10
+		.classRef 0.9;		// javacard/framework/OwnerPIN
+		// 11
+		virtualMethodRef 0.3.1()V;		// register()V
+		// 12
+		virtualMethodRef 0.3.3()Z;		// selectingApplet()Z
+		// 13
+		virtualMethodRef 0.10.1()[B;		// getBuffer()[B
+		// 14
+		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 15
+		staticMethodRef Scaffolding/verifyPin(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 16
+		staticMethodRef Scaffolding/changePin(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 17
+		staticMethodRef Scaffolding/unblockPin(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 18
+		virtualMethodRef 0.9.1([BSB)Z;		// check([BSB)Z
+		// 19
+		virtualMethodRef 0.9.2()B;		// getTriesRemaining()B
+		// 20
+		virtualMethodRef 0.9.4()Z;		// isValidated()Z
+		// 21
+		staticMethodRef 0.16.0([BS[BSS)B;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+		// 22
+		virtualMethodRef 0.9.6()V;		// resetAndUnblock()V
+	}
+
+	.class public Scaffolding 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private 0.9 pin 0;		// Ljavacard/framework/OwnerPIN;
+			private byte[] pukValue 1;		// [B
+			private byte pukTriesRemaining 2;		// B
+			private boolean cardBlocked 3;		// Z
+			private static final byte INS_VERIFY_PIN = 32;		// B
+			private static final byte INS_CHANGE_PIN = 33;		// B
+			private static final byte INS_UNBLOCK_PIN = 85;		// B
+			private static final byte PIN_MAX_TRIES = 3;		// B
+			private static final byte PIN_MAX_SIZE = 4;		// B
+			private static final byte PUK_MAX_TRIES = 5;		// B
+			private static final byte PUK_SIZE = 8;		// B
+			private static final short SW_CARD_BLOCKED = 25219;		// S
+			private static final short SW_PIN_BLOCKED = 27011;		// S
+			private static final short SW_SECURITY_NOT_SATISFIED = 27010;		// S
+		}
+
+		.publicMethodTable 7 8 {
+			equals(Ljava/lang/Object;)Z 0;
+			register()V 1;
+			register([BSB)V 2;
+			selectingApplet()Z 3;
+			deselect()V 4;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable; 5;
+			select()Z 6;
+			process(Ljavacard/framework/APDU;)V 7;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method public static install([BSB)V 0 {
+			.stack 2;
+			.locals 0;
+
+				L0:	new 7;		// com/utopios/scaffolding/Scaffolding
+					dup;
+					invokespecial 5;		// com/utopios/scaffolding/Scaffolding.<init>()V
+					pop;
+					return;
+		}
+
+		.method protected <init>()V 1 {
+			.stack 5;
+			.locals 2;
+
+				L0:	aload_0;
+					invokespecial 9;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					new 10;		// javacard/framework/OwnerPIN
+					dup;
+					sconst_3;
+					sconst_4;
+					invokespecial 4;		// javacard/framework/OwnerPIN.<init>(BB)V
+					putfield_a 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					sconst_4;
+					newarray 11;
+					dup;
+					sconst_0;
+					bspush 49;
+					bastore;
+					dup;
+					sconst_1;
+					bspush 50;
+					bastore;
+					dup;
+					sconst_2;
+					bspush 51;
+					bastore;
+					dup;
+					sconst_3;
+					bspush 52;
+					bastore;
+					astore_1;
+				L1:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					aload_1;
+					sconst_0;
+					aload_1;
+					arraylength;
+					s2b;
+					invokevirtual 6;		// update([BSB)V
+					aload_0;
+					bspush 8;
+					newarray 11;
+					putfield_a 1;		// reference com/utopios/scaffolding/Scaffolding.pukValue
+					bspush 8;
+					newarray 11;
+					dup;
+					sconst_0;
+					bspush 49;
+					bastore;
+					dup;
+					sconst_1;
+					bspush 50;
+					bastore;
+					dup;
+					sconst_2;
+					bspush 51;
+					bastore;
+					dup;
+					sconst_3;
+					bspush 52;
+					bastore;
+					dup;
+					sconst_4;
+					bspush 53;
+					bastore;
+					dup;
+					sconst_5;
+					bspush 54;
+					bastore;
+					dup;
+					bspush 6;
+					bspush 55;
+					bastore;
+					dup;
+					bspush 7;
+					bspush 56;
+					bastore;
+					astore_2;
+				L2:	aload_2;
+					sconst_0;
+					getfield_a_this 1;		// reference com/utopios/scaffolding/Scaffolding.pukValue
+					sconst_0;
+					aload_2;
+					arraylength;
+					invokestatic 8;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					sconst_5;
+					putfield_b_this 2;		// byte com/utopios/scaffolding/Scaffolding.pukTriesRemaining
+					sconst_0;
+					putfield_b_this 3;		// boolean com/utopios/scaffolding/Scaffolding.cardBlocked
+					aload_0;
+					invokevirtual 11;		// register()V
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 2;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_0;
+					invokevirtual 12;		// selectingApplet()Z
+					ifeq L2;
+				L1:	return;
+				L2:	aload_1;
+					invokevirtual 13;		// getBuffer()[B
+					astore_2;
+				L3:	aload_2;
+					sconst_1;
+					baload;
+					sstore_3;
+				L4:	getfield_b_this 3;		// boolean com/utopios/scaffolding/Scaffolding.cardBlocked
+					ifeq L6;
+				L5:	sspush 25219;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	sload_3;
+					slookupswitch L10 3 32 L7 33 L8 85 L9;
+				L7:	aload_0;
+					aload_1;
+					invokespecial 15;		// com/utopios/scaffolding/Scaffolding.verifyPin(Ljavacard/framework/APDU;)V
+					goto L11;
+				L8:	aload_0;
+					aload_1;
+					invokespecial 16;		// com/utopios/scaffolding/Scaffolding.changePin(Ljavacard/framework/APDU;)V
+					goto L11;
+				L9:	aload_0;
+					aload_1;
+					invokespecial 17;		// com/utopios/scaffolding/Scaffolding.unblockPin(Ljavacard/framework/APDU;)V
+					goto L11;
+				L10:	sspush 27904;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L11:	return;
+		}
+
+		.method private verifyPin(Ljavacard/framework/APDU;)V {
+			.stack 4;
+			.locals 4;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 13;		// getBuffer()[B
+					astore_2;
+				L1:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L2:	sconst_5;
+					sstore 4;
+				L3:	sload_3;
+					ifeq L5;
+				L4:	sload_3;
+					sconst_4;
+					if_scmple L6;
+				L5:	sspush 26368;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					aload_2;
+					sload 4;
+					sload_3;
+					invokevirtual 18;		// check([BSB)Z
+					sstore 5;
+				L7:	sload 5;
+					ifne L11;
+				L8:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					invokevirtual 19;		// getTriesRemaining()B
+					ifne L10;
+				L9:	sspush 27011;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+					goto L11;
+				L10:	sspush 27010;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L11:	return;
+		}
+
+		.method private changePin(Ljavacard/framework/APDU;)V {
+			.stack 4;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 13;		// getBuffer()[B
+					astore_2;
+				L1:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L2:	sconst_5;
+					sstore 4;
+				L3:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					invokevirtual 20;		// isValidated()Z
+					ifne L5;
+				L4:	sspush 27010;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	sload_3;
+					ifeq L7;
+				L6:	sload_3;
+					sconst_4;
+					if_scmple L8;
+				L7:	sspush 26368;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L8:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					aload_2;
+					sload 4;
+					sload_3;
+					invokevirtual 6;		// update([BSB)V
+					return;
+		}
+
+		.method private unblockPin(Ljavacard/framework/APDU;)V {
+			.stack 5;
+			.locals 4;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 13;		// getBuffer()[B
+					astore_2;
+				L1:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L2:	sconst_5;
+					sstore 4;
+				L3:	sload_3;
+					bspush 8;
+					if_scmpeq L5;
+				L4:	sspush 26368;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	getfield_b_this 2;		// byte com/utopios/scaffolding/Scaffolding.pukTriesRemaining
+					ifne L7;
+				L6:	sconst_1;
+					putfield_b_this 3;		// boolean com/utopios/scaffolding/Scaffolding.cardBlocked
+					sspush 25219;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	aload_2;
+					sload 4;
+					getfield_a_this 1;		// reference com/utopios/scaffolding/Scaffolding.pukValue
+					sconst_0;
+					bspush 8;
+					invokestatic 21;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					ifne L11;
+				L8:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					invokevirtual 22;		// resetAndUnblock()V
+					sconst_4;
+					newarray 11;
+					dup;
+					sconst_0;
+					bspush 49;
+					bastore;
+					dup;
+					sconst_1;
+					bspush 50;
+					bastore;
+					dup;
+					sconst_2;
+					bspush 51;
+					bastore;
+					dup;
+					sconst_3;
+					bspush 52;
+					bastore;
+					astore 5;
+				L9:	getfield_a_this 0;		// reference com/utopios/scaffolding/Scaffolding.pin
+					aload 5;
+					sconst_0;
+					aload 5;
+					arraylength;
+					s2b;
+					invokevirtual 6;		// update([BSB)V
+					sconst_5;
+					putfield_b_this 2;		// byte com/utopios/scaffolding/Scaffolding.pukTriesRemaining
+				L10:	goto L14;
+				L11:	aload_0;
+					dup;
+					getfield_b 2;		// byte com/utopios/scaffolding/Scaffolding.pukTriesRemaining
+					sconst_1;
+					ssub;
+					s2b;
+					putfield_b 2;		// byte com/utopios/scaffolding/Scaffolding.pukTriesRemaining
+					getfield_b_this 2;		// byte com/utopios/scaffolding/Scaffolding.pukTriesRemaining
+					ifne L13;
+				L12:	sconst_1;
+					putfield_b_this 3;		// boolean com/utopios/scaffolding/Scaffolding.cardBlocked
+					sspush 25219;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+					goto L14;
+				L13:	sspush 27010;
+					invokestatic 14;		// javacard/framework/ISOException.throwIt(S)V
+				L14:	return;
+		}
+
+	}
+
+}
