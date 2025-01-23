@@ -26,7 +26,26 @@ public class Scaffolding extends Applet {
    
    @Override 
    public void process(APDU apdu) {
+        byte[] buffer = apdu.getBuffer();
+        if(selectingApplet()) {
+            ISOException.throwIt((short) 0x9000);
+            return;
+        }   
+        switch(buffer[ISO7816.OFFSET_INS]) {
+            case 0x10:
+                handle10(apdu);
+                break;
+            default:
+                ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
+        }
         
+    }
+
+    private void handle10(APDU apdu) {
+        byte[] buffer = apdu.getBuffer();
+        byte[] hello = {(byte)'h', (byte)'e', (byte)'l', (byte)'l', (byte)'o'};
+        Util.arrayCopyNonAtomic(hello, (short)0, buffer, (short) 0, (short) hello.length);
+        apdu.setOutgoingAndSend((short) 0, (short) hello.length);
     }
     
     
