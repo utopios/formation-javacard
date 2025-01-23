@@ -11,6 +11,11 @@ public class Scaffolding extends Applet {
     
     //private byte[] buffer;
 
+    //Object pour gérer pin
+    private OwnerPIN pin;
+    private static final byte PIN_MAX_TRIES = 3;
+    private static final byte PIN_SIZE = 4; 
+
     //Exercice 1
 
     private static final byte CLA_PROPRIETAIRE = (byte)0x80;
@@ -18,6 +23,8 @@ public class Scaffolding extends Applet {
     private static final byte INS_HELLO = (byte)0x10;
     private static final byte INS_INCREMENT = (byte)0x30;
     private static final byte[] HELLO = {(byte)'h', (byte)'e', (byte)'l', (byte)'l', (byte)'o'};
+
+    private static final byte INS_VERIFY_PIN = (byte)0x21;
     private short counter;
 
     /**
@@ -25,6 +32,9 @@ public class Scaffolding extends Applet {
      */
     protected Scaffolding() {
         
+        //Initilisation du PIN
+        pin = new OwnerPIN(PIN_MAX_TRIES, PIN_SIZE);
+        pin.update({'1', '2', '3', '4'}, (short) 0, (byte) 4);
         register();
     }
 
@@ -51,6 +61,21 @@ public class Scaffolding extends Applet {
             default:
                 ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
         }*/
+
+       //Vérification du pin
+       byte[] buffer = apdu.getBuffer();
+       byte lc = buffer[ISO7816.OFFSET_LC];
+       short dataOffset = ISO7816.OFFSET_CDATA;
+       if(lc < PIN_SIZE || lc > PIN_SIZE) {
+            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+       }
+       if(pin.getTriesRemaining() == 0) {
+        //
+       }
+       if(!pin.check(buffer, dataOffset, lc)) {
+        ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+       }
+
         
     }
 
