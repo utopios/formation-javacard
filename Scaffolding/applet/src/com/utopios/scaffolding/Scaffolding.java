@@ -6,6 +6,7 @@ import javacard.framework.Applet;
 import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
 import javacard.framework.Util;
+import javacard.framework.OwnerPIN;
 
 public class Scaffolding extends Applet {
     
@@ -34,7 +35,8 @@ public class Scaffolding extends Applet {
         
         //Initilisation du PIN
         pin = new OwnerPIN(PIN_MAX_TRIES, PIN_SIZE);
-        pin.update({'1', '2', '3', '4'}, (short) 0, (byte) 4);
+        byte[] defaultPin = {'1', '2', '3', '4'};
+        pin.update(defaultPin, (short) 0, (byte) 4);
         register();
     }
 
