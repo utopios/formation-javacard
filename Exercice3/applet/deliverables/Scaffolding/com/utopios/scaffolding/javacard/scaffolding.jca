@@ -1,0 +1,145 @@
+// converted by version  [v24.1]
+// on Fri Jan 24 10:16:44 CET 2025
+
+.package com/utopios/scaffolding {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x1;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.9;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0x1:0x1 Scaffolding;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef short Scaffolding/counter;
+		// 1
+		instanceFieldRef byte[] Scaffolding/tempBuffer;
+		// 2
+		staticMethodRef 0.8.13(SB)[B;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+		// 3
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 4
+		virtualMethodRef 0.3.1()V;		// register()V
+		// 5
+		.classRef Scaffolding;
+		// 6
+		staticMethodRef Scaffolding/<init>()V;
+		// 7
+		.classRef 1.2;		// java/lang/Exception
+		// 8
+		virtualMethodRef 0.10.1()[B;		// getBuffer()[B
+		// 9
+		staticMethodRef 0.16.6([BSS)S;		// javacard/framework/Util.setShort([BSS)S
+		// 10
+		virtualMethodRef 0.10.8(SS)V;		// setOutgoingAndSend(SS)V
+		// 11
+		staticMethodRef 0.8.1()V;		// javacard/framework/JCSystem.beginTransaction()V
+		// 12
+		staticMethodRef 0.8.2()V;		// javacard/framework/JCSystem.commitTransaction()V
+		// 13
+		staticMethodRef 0.8.0()V;		// javacard/framework/JCSystem.abortTransaction()V
+	}
+
+	.class public Scaffolding 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private byte[] tempBuffer 0;		// [B
+			private short counter 1;		// S
+			private static final byte INS_GET_COUNTER = 16;		// B
+			private static final byte INS_INCREMENT = 32;		// B
+		}
+
+		.publicMethodTable 7 8 {
+			equals(Ljava/lang/Object;)Z 0;
+			register()V 1;
+			register([BSB)V 2;
+			selectingApplet()Z 3;
+			deselect()V 4;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable; 5;
+			select()Z 6;
+			process(Ljavacard/framework/APDU;)V 7;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method protected <init>()V 0 {
+			.stack 3;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 3;		// javacard/framework/Applet.<init>()V
+					sconst_0;
+					putfield_s_this 0;		// short com/utopios/scaffolding/Scaffolding.counter
+					aload_0;
+					bspush 64;
+					sconst_1;
+					invokestatic 2;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 1;		// reference com/utopios/scaffolding/Scaffolding.tempBuffer
+					aload_0;
+					invokevirtual 4;		// register()V
+					return;
+		}
+
+		.method public static install([BSB)V 1 {
+			.stack 2;
+			.locals 0;
+
+				L0:	new 5;		// com/utopios/scaffolding/Scaffolding
+					dup;
+					invokespecial 6;		// com/utopios/scaffolding/Scaffolding.<init>()V
+					pop;
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 3;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 8;		// getBuffer()[B
+					astore_2;
+				L1:	aload_2;
+					sconst_1;
+					baload;
+					sstore_3;
+				L2:	sload_3;
+					slookupswitch L9 2 16 L3 32 L4;
+				L3:	aload_2;
+					sconst_0;
+					getfield_s_this 0;		// short com/utopios/scaffolding/Scaffolding.counter
+					invokestatic 9;		// javacard/framework/Util.setShort([BSS)S
+					pop;
+					aload_1;
+					sconst_0;
+					sconst_2;
+					invokevirtual 10;		// setOutgoingAndSend(SS)V
+					goto L9;
+				L4:	invokestatic 11;		// javacard/framework/JCSystem.beginTransaction()V
+				L5:	aload_0;
+					dup;
+					getfield_s 0;		// short com/utopios/scaffolding/Scaffolding.counter
+					sconst_1;
+					sadd;
+					putfield_s 0;		// short com/utopios/scaffolding/Scaffolding.counter
+					invokestatic 12;		// javacard/framework/JCSystem.commitTransaction()V
+				L6:	goto L9;
+				L7:	astore 4;
+				L8:	invokestatic 13;		// javacard/framework/JCSystem.abortTransaction()V
+				L9:	return;
+			.exceptionTable {
+				// start_block end_block handler_block catch_type_index
+				L5 L6 L7 7;
+			}
+		}
+
+	}
+
+}

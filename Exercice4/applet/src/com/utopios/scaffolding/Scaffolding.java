@@ -7,158 +7,115 @@ import javacard.framework.ISO7816;
 import javacard.framework.ISOException;
 import javacard.framework.Util;
 import javacard.framework.OwnerPIN;
-import javacard.framework.JCSystem;
+import javacard.framework.*;
+import javacard.security.*;
+import javacardx.crypto.Cipher;
 
 public class Scaffolding extends Applet {
     
-    private static final byte INS_GET_BALANCE   = (byte) 0x30;
-    private static final byte INS_CREDIT        = (byte) 0x32;
-    private static final byte INS_DEBIT         = (byte) 0x34;
-    private static final byte INS_RESET_BALANCE = (byte) 0x36; 
+    
+    private static final byte INS_GET_EC_PUBLIC = (byte) 0x10;
+    private static final byte INS_ECDH = (byte) 0x20;
+    private static final byte INS_SIGN_CHALLENGE = (byte) 0x30;
+    private static final byte INS_VERIFY_SIGNATURE = (byte) 0x40;
 
-    // Champ persistant : stocké en EEPROM
-    private short balance;
+    private ECPrivateKey ecPrivateKey;
+    private ECPublicKey ecPublicKey;
+    private KeyAgreement keyAgreement;
 
-    private short[] tempBuffer;
-
-
+    private AESKey sessionKey;
+    private Signature ecdsaSigner;
+    private byte[] tempBuffer;
     /**
      * Only this class's install method should create the applet object.
      */
     protected Scaffolding() {
+        KeyPair ecKeyPair = new KeyPair(KeyPair.ALG_EC_FP, KeyBuilder.LENGTH_EC_FP_256);
+        ecKeyPair.genKeyPair();
+        ecPrivateKey = (ECPrivateKey) ecKeyPair.getPrivate();
+        ecPublicKey = (ECPublicKey) ecKeyPair.getPublic();
+        keyAgreement = KeyAgreement.getInstance(KeyAgreement.ALG_EC_SVDP_DH, false);
+        sessionKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+        ecdsaSigner = Signature.getInstance(Signature.ALG_ECDSA_SHA_256, false);
+        tempBuffer = JCSystem.makeTransientByteArray((short) 256, JCSystem.CLEAR_ON_DESELECT);
         
-        balance = 0;
-
-        tempBuffer = JCSystem.makeTransientShortArray((short) 64, JCSystem.CLEAR_ON_DESELECT);
         register();
-        
     }
 
     
     public static void install(byte[] bArray, short bOffset, byte bLength) {
+        
         new Scaffolding();
     }
 
-    public boolean select() {
-        tempBuffer[0] = balance;
-        return true;
-    }
    
    @Override 
    public void process(APDU apdu) {
-         if (selectingApplet()) {
+       byte[] buffer = apdu.getBuffer();
+
+       
+        if (selectingApplet()) {
             return;
         }
 
-        byte[] buffer = apdu.getBuffer();
-        byte ins = buffer[ISO7816.OFFSET_INS];
-
-        switch (ins) {
-            case INS_GET_BALANCE:
-                getBalance(apdu);
+        
+        switch (buffer[ISO7816.OFFSET_INS]) {
+            case INS_WRITE_DATA:
+                writeData(apdu);
                 break;
 
-            case INS_CREDIT:
-                credit(apdu);
-                break;
-
-            case INS_DEBIT:
-                debit(apdu);
-                break;
-
-            case INS_RESET_BALANCE:
-                resetBalance(apdu);
+            case INS_READ_DATA:
+                readData(apdu);
                 break;
 
             default:
                 ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
-        }  
-    }
-
-     private void getBalance(APDU apdu) {
-        byte[] buffer = apdu.getBuffer();
-        Util.setShort(buffer, (short) 0, balance);
-
-        apdu.setOutgoingAndSend((short) 0, (short) 2);
-    }
-
-    private void credit(APDU apdu) {
-        byte[] buffer = apdu.getBuffer();
-
-        short bytesRead = apdu.setIncomingAndReceive();
-        if (bytesRead != 2) {
-            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
         }
-
-        short amount = Util.getShort(buffer, ISO7816.OFFSET_CDATA);
-
-        if (amount < 0) {
-            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        }
-
-        JCSystem.beginTransaction();
-        try {
-            balance += amount;
-            tempBuffer[0] += amount;
-            JCSystem.commitTransaction();
-        } catch (Exception e) {
-            JCSystem.abortTransaction();
-            ISOException.throwIt((short) 0x6FFF);
-        }
-    }
-
-    private void debit(APDU apdu) {
-        byte[] buffer = apdu.getBuffer();
-
-        short bytesRead = apdu.setIncomingAndReceive();
-        if (bytesRead != 2) {
-            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        }
-
-        short amount = Util.getShort(buffer, ISO7816.OFFSET_CDATA);
-
-        if (amount < 0) {
-            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        }
-
-        if ((short)(balance - amount) < 0) {
-            ISOException.throwIt((short) 0x6900); 
-        }
-
-        JCSystem.beginTransaction();
-        try {
-            balance -= amount;
-            tempBuffer[0] -= amount;
-            JCSystem.commitTransaction();
-        } catch (Exception e) {
-            JCSystem.abortTransaction();
-            ISOException.throwIt((short) 0x6FFF);
-        }
-    }
-
-    private void resetBalance(APDU apdu) {
-        JCSystem.beginTransaction();
-        try {
-            balance = 0;
-            tempBuffer[0] = 0;
-            JCSystem.commitTransaction();
-        } catch (Exception e) {
-            JCSystem.abortTransaction();
-            ISOException.throwIt((short) 0x6FFF);
-        }
-    }
-
-
-    public void deselect() {
-        JCSystem.beginTransaction();
-        try {
-            balance = tempBuffer[0];
-            JCSystem.commitTransaction();
-        }catch(Exception ex) {
-            JCSystem.abortTransaction();
-            ISOException.throwIt((short) 0x6FFF);
-        }
-    }
     
-    
+   }
+
+   private void sendPublicKey(APDU apdu) {
+        byte[] buffer = apdu.getBuffer();
+        short pubKeyLength = ecPublicKey.getW(buffer, (short) 0);
+        apdu.setOutgoing();
+        apdu.setOutgoingLength(pubKeyLength);
+        apdu.sendBytes((short) 0, pubKeyLength);
+    }
+
+    //Clacule du secret partagé avec la clé public reçue par le terminal
+
+    private void computeSharedSecret(APDU apdu) {
+        byte[] buffer = apdu.getBuffer();
+        short receivedLength = apdu.setIncomingAndReceive();
+        keyAgreement.init(ecPrivateKey);
+        short sharedSecretLength = keyAgreement.generateSecret(buffer, ISO7816.OFFSET_CDATA, receivedLength, tempBuffer, (short) 0);
+        sessionKey.setKey(tempBuffer, (short) 0);
+        ISOException.throwIt(ISO7816.SW_NO_ERROR);
+    }
+
+    private void signChallenge(APDU apdu) {
+        byte[] buffer = apdu.getBuffer();
+        short challengeLength = apdu.setIncomingAndReceive();
+        ecdsaSigner.init(ecPrivateKey, Signature.MODE_SIGN);
+        short signatureLength = ecdsaSigner.sign(buffer, ISO7816.OFFSET_CDATA, challengeLength, buffer, (short) 0);
+        apdu.setOutgoing();
+        apdu.setOutgoingLength(signatureLength);
+        apdu.sendBytes((short) 0, signatureLength);
+    }
+
+    private void verifySignature(APDU apdu) {
+        byte[] buffer = apdu.getBuffer();
+        short dataLength = apdu.setIncomingAndReceive();
+        short dataLengthField = buffer[ISO7816.OFFSET_CDATA];
+        short signatureOffset = (short) (ISO7816.OFFSET_CDATA + 1 + dataLengthField);
+        ECPublicKey terminalPublicKey = (ECPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_EC_FP_PUBLIC, KeyBuilder.LENGTH_EC_FP_256, false);
+        terminalPublicKey.setW(buffer, signatureOffset);
+        ecdsaSigner.init(terminalPublicKey, Signature.MODE_VERIFY);
+        boolean isVerified = ecdsaSigner.verify(buffer, (short) (ISO7816.OFFSET_CDATA + 1), dataLengthField,
+                                                buffer, signatureOffset, (short) (dataLength - signatureOffset));
+        if (!isVerified) {
+            ISOException.throwIt((short) 0x6A80);
+        }
+        ISOException.throwIt(ISO7816.SW_NO_ERROR);
+    }
 }
