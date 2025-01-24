@@ -71,6 +71,7 @@ public class ServerApplet extends Applet implements MyShareable, MultiSelectable
         // it is ok to copy it
         Util.arrayCopy(rsc, (short)0, localRscView, (short)0, DATA_SIZE);
 
+         ISOException.throwIt((short)0x9001);
         // It's also ok to read single elements from it
         byte firstByte = rsc[0];
 

@@ -1,5 +1,5 @@
 // converted by version  [v24.1]
-// on Tue Jan 21 21:52:51 CET 2025
+// on Fri Jan 24 11:36:07 CET 2025
 
 .package com/oracle/jcclassic/samples/arrayview/ServerApplet {
 	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0xC;
@@ -141,6 +141,8 @@
 					bspush 10;
 					invokestatic 7;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
+					sspush -28671;
+					invokestatic 5;		// javacard/framework/ISOException.throwIt(S)V
 					aload_1;
 					sconst_0;
 					baload;
