@@ -1,8 +1,8 @@
-Exercice : E-Wallet (Gestion d’un solde persistant)
-Contexte
+### Exercice : E-Wallet (Gestion d’un solde persistant)
+**Contexte**
 Vous devez créer une applet Java Card qui gère un « Wallet » (porte-monnaie électronique). L’objectif est de manipuler la mémoire persistante de la carte (EEPROM) pour conserver le solde après un reset de la carte.
 
-Spécifications fonctionnelles
+**Spécifications fonctionnelles**
 Champ persistant balance :
 
 Stocké en mémoire non volatile (EEPROM).
