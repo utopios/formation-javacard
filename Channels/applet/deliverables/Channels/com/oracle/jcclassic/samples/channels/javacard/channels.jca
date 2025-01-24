@@ -1,0 +1,922 @@
+// converted by version  [v24.1]
+// on Fri Jan 24 11:48:44 CET 2025
+
+.package com/oracle/jcclassic/samples/channels {
+	.aid 0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0xB;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.9;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x2:0x9 1.0;		//javacardx/apdu
+		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
+	}
+
+	.applet {
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0xB:0x1 AccountAccessor;
+		0xA0:0x0:0x0:0x0:0x62:0x3:0x1:0xC:0xB:0x2 ConnectionManager;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef short[] AccountAccessor/chargeRate;
+		// 1
+		instanceFieldRef short AccountAccessor/balance;
+		// 2
+		instanceFieldRef short AccountAccessor/homeArea;
+		// 3
+		instanceFieldRef short[] ConnectionManager/activeAreaCode;
+		// 4
+		instanceFieldRef byte[] ConnectionManager/connectionStatus;
+		// 5
+		staticFieldRef AccountAccessor AccountAccessor/theAccount;
+		// 6
+		virtualMethodRef 0.3.1()V;		// register()V
+		// 7
+		.classRef AccountAccessor;
+		// 8
+		staticMethodRef AccountAccessor/<init>([BSB)V;
+		// 9
+		virtualMethodRef 0.10.1()[B;		// getBuffer()[B
+		// 10
+		virtualMethodRef 0.10.14()Z;		// isISOInterindustryCLA()Z
+		// 11
+		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 12
+		staticMethodRef AccountAccessor/getBalance(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 13
+		staticMethodRef AccountAccessor/credit(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 14
+		staticMethodRef 0.8.1()V;		// javacard/framework/JCSystem.beginTransaction()V
+		// 15
+		staticMethodRef 0.8.2()V;		// javacard/framework/JCSystem.commitTransaction()V
+		// 16
+		virtualMethodRef 0.10.6()S;		// setIncomingAndReceive()S
+		// 17
+		staticFieldRef byte[] AccountAccessor/CONNECTION_MGR_AID_BYTES;
+		// 18
+		staticMethodRef 0.8.11([BSB)Ljavacard/framework/AID;;		// javacard/framework/JCSystem.lookupAID([BSB)Ljavacard/framework/AID;
+			.descriptor	Ljavacard/framework/AID;	0.6;
+
+		// 19
+		staticMethodRef 0.8.20(Ljavacard/framework/AID;)Z;		// javacard/framework/JCSystem.isAppletActive(Ljavacard/framework/AID;)Z
+			.descriptor	Ljavacard/framework/AID;	0.6;
+
+		// 20
+		virtualMethodRef 0.10.7()S;		// setOutgoing()S
+		// 21
+		virtualMethodRef 0.10.9(S)V;		// setOutgoingLength(S)V
+		// 22
+		virtualMethodRef 0.10.4(SS)V;		// sendBytes(SS)V
+		// 23
+		staticMethodRef 0.8.15(SB)[S;		// javacard/framework/JCSystem.makeTransientShortArray(SB)[S
+		// 24
+		staticMethodRef AccountAccessor/setAccount(Lcom/oracle/jcclassic/samples/channels/AccountAccessor;)V;
+		// 25
+		staticMethodRef 0.8.13(SB)[B;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+		// 26
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 27
+		virtualMethodRef 0.3.1()V;		// register()V
+		// 28
+		.classRef ConnectionManager;
+		// 29
+		staticMethodRef ConnectionManager/<init>([BSB)V;
+		// 30
+		staticMethodRef ConnectionManager/initState()V;
+		// 31
+		staticMethodRef ConnectionManager/clearState()V;
+		// 32
+		staticMethodRef ConnectionManager/validateKey(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 33
+		staticMethodRef ConnectionManager/timeTick(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 34
+		staticMethodRef ConnectionManager/setConnection()V;
+		// 35
+		staticMethodRef ConnectionManager/resetConnection()V;
+		// 36
+		virtualMethodRef 0.10.16()S;		// getOffsetCdata()S
+		// 37
+		staticMethodRef 0.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 38
+		staticMethodRef 0.16.5(BB)S;		// javacard/framework/Util.makeShort(BB)S
+		// 39
+		virtualMethodRef 0.10.3(S)S;		// receiveBytes(S)S
+		// 40
+		virtualMethodRef 0.10.11()B;		// getCurrentState()B
+		// 41
+		staticMethodRef 0.10.2()B;		// javacard/framework/APDU.getProtocol()B
+		// 42
+		staticMethodRef AccountAccessor/getAccount()Lcom/oracle/jcclassic/samples/channels/AccountAccessor;;
+		// 43
+		virtualMethodRef AccountAccessor/debit(SZ)Z;
+	}
+
+	.class public AccountAccessor 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private short[] chargeRate 0;		// [S
+			private short balance 1;		// S
+			private short homeArea 2;		// S
+			static final byte AA_CLA = -128;		// B
+			static final byte GET_BALANCE = 16;		// B
+			static final byte CREDIT = 32;		// B
+			static final short MAX_BALANCE = 32767;		// S
+			static final short SW_MAX_BALANCE_EXCEEDED = 27220;		// S
+			static final short SW_INVALID_TRANSACTION_AMOUNT = 27221;		// S
+			static final byte AREA_HOME = 0;		// B
+			static final byte AREA_REMOTE = 1;		// B
+			static final byte[] CONNECTION_MGR_AID_BYTES = {-96,0,0,0,98,3,1,12,11,2};		// [B
+			static final short SW_NO_CONNECTION = 26885;		// S
+			static AccountAccessor theAccount;		// Lcom/oracle/jcclassic/samples/channels/AccountAccessor;
+		}
+
+		.publicMethodTable 4 10 {
+			equals(Ljava/lang/Object;)Z 0;
+			register()V 1;
+			register([BSB)V 2;
+			selectingApplet()Z 3;
+			deselect()V 4;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable; 5;
+			select()Z 6;
+			process(Ljavacard/framework/APDU;)V 7;
+			select(Z)Z 255;
+			deselect(Z)V 255;
+		}
+
+		.packageMethodTable 0 {
+			debit(SZ)Z;
+		}
+
+		.implementedInterfaceInfoTable { 
+			.interface 0.17 { 		// javacard/framework/MultiSelectable
+				8;		// select(Z)Z
+				9;		// deselect(Z)V
+			}
+
+			.interface 1.0 { 		// javacardx/apdu/ExtendedLength
+			}
+
+		}
+
+		.method private static setAccount(Lcom/oracle/jcclassic/samples/channels/AccountAccessor;)V {
+			.stack 1;
+			.locals 0;
+
+				L0:	aload_0;
+					putstatic_a 5;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.theAccount
+					return;
+		}
+
+		.method private <init>([BSB)V {
+			.stack 7;
+			.locals 2;
+
+				L0:	aload_0;
+					invokespecial 26;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					sconst_2;
+					newarray 12;
+					putfield_a 0;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.chargeRate
+					aload_0;
+					invokestatic 24;		// com/oracle/jcclassic/samples/channels/AccountAccessor.setAccount(Lcom/oracle/jcclassic/samples/channels/AccountAccessor;)V
+					aload_1;
+					sload_2;
+					baload;
+					sstore 4;
+				L1:	sload_2;
+					sload 4;
+					sadd;
+					sconst_1;
+					sadd;
+					sstore_2;
+					aload_1;
+					sload_2;
+					baload;
+					sstore 5;
+				L2:	sload_2;
+					sload 5;
+					sadd;
+					sconst_1;
+					sadd;
+					sstore_2;
+					sinc 2 1;
+					sconst_0;
+					putfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					aload_0;
+					aload_1;
+					sload_2;
+					sinc 2 1;
+					baload;
+					bspush 8;
+					sshl;
+					aload_1;
+					sload_2;
+					sinc 2 1;
+					baload;
+					sspush 255;
+					sand;
+					sor;
+					putfield_s 2;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.homeArea
+					getfield_a_this 0;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.chargeRate
+					sconst_0;
+					aload_1;
+					sload_2;
+					sinc 2 1;
+					baload;
+					bspush 8;
+					sshl;
+					aload_1;
+					sload_2;
+					sinc 2 1;
+					baload;
+					sspush 255;
+					sand;
+					sor;
+					sastore;
+					getfield_a_this 0;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.chargeRate
+					sconst_1;
+					aload_1;
+					sload_2;
+					sinc 2 1;
+					baload;
+					bspush 8;
+					sshl;
+					aload_1;
+					sload_2;
+					baload;
+					sspush 255;
+					sand;
+					sor;
+					sastore;
+					aload_0;
+					invokevirtual 6;		// register()V
+					return;
+		}
+
+		.method public static install([BSB)V 0 {
+			.stack 5;
+			.locals 0;
+
+				L0:	new 7;		// com/oracle/jcclassic/samples/channels/AccountAccessor
+					dup;
+					aload_0;
+					sload_1;
+					sload_2;
+					invokespecial 8;		// com/oracle/jcclassic/samples/channels/AccountAccessor.<init>([BSB)V
+					pop;
+					return;
+		}
+
+		.method public select()Z 6 {
+			.stack 1;
+			.locals 0;
+
+				L0:	sconst_1;
+					sreturn;
+		}
+
+		.method public deselect()V 4 {
+			.stack 0;
+			.locals 0;
+
+				L0:	return;
+		}
+
+		.method public select(Z)Z 8 {
+			.stack 1;
+			.locals 0;
+
+				L0:	sconst_1;
+					sreturn;
+		}
+
+		.method public deselect(Z)V 9 {
+			.stack 0;
+			.locals 0;
+
+				L0:	return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 2;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 9;		// getBuffer()[B
+					astore_2;
+				L1:	aload_1;
+					invokevirtual 10;		// isISOInterindustryCLA()Z
+					ifeq L5;
+				L2:	aload_2;
+					sconst_1;
+					baload;
+					bspush -92;
+					if_scmpne L4;
+				L3:	return;
+				L4:	sspush 28160;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	aload_2;
+					sconst_1;
+					baload;
+					slookupswitch L8 2 16 L6 32 L7;
+				L6:	aload_0;
+					aload_1;
+					invokespecial 12;		// com/oracle/jcclassic/samples/channels/AccountAccessor.getBalance(Ljavacard/framework/APDU;)V
+					return;
+				L7:	aload_0;
+					aload_1;
+					invokespecial 13;		// com/oracle/jcclassic/samples/channels/AccountAccessor.credit(Ljavacard/framework/APDU;)V
+					return;
+				L8:	sspush 27904;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+					return;
+		}
+
+		.method  debit(SZ)Z 128 {
+			.stack 3;
+			.locals 1;
+
+				L0:	sload_1;
+					getfield_s_this 2;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.homeArea
+					if_scmpne L3;
+				L1:	getfield_a_this 0;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.chargeRate
+					sconst_0;
+					saload;
+					sstore_3;
+				L2:	goto L4;
+				L3:	getfield_a_this 0;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.chargeRate
+					sconst_1;
+					saload;
+					sstore_3;
+				L4:	sload_2;
+					ifeq L6;
+				L5:	sinc 3 20;
+				L6:	getfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					sload_3;
+					if_scmplt L8;
+				L7:	invokestatic 14;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_0;
+					getfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					sload_3;
+					ssub;
+					putfield_s 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					invokestatic 15;		// javacard/framework/JCSystem.commitTransaction()V
+					sconst_1;
+					sreturn;
+				L8:	sconst_0;
+					sreturn;
+		}
+
+		.method public static getAccount()Lcom/oracle/jcclassic/samples/channels/AccountAccessor; 1 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getstatic_a 5;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.theAccount
+					areturn;
+		}
+
+		.method private credit(Ljavacard/framework/APDU;)V {
+			.stack 3;
+			.locals 4;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 9;		// getBuffer()[B
+					astore_2;
+				L1:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L2:	aload_1;
+					invokevirtual 16;		// setIncomingAndReceive()S
+					s2b;
+					sstore 4;
+				L3:	sload_3;
+					sconst_2;
+					if_scmpne L5;
+				L4:	sload 4;
+					sconst_2;
+					if_scmpeq L6;
+				L5:	sspush 26368;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	aload_2;
+					sconst_5;
+					baload;
+					bspush 8;
+					sshl;
+					aload_2;
+					bspush 6;
+					baload;
+					sspush 255;
+					sand;
+					sor;
+					sstore 5;
+				L7:	sload 5;
+					ifge L9;
+				L8:	sspush 27221;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L9:	getfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					sload 5;
+					sadd;
+					sspush 32767;
+					if_scmple L11;
+				L10:	sspush 27220;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L11:	invokestatic 14;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_0;
+					getfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					sload 5;
+					sadd;
+					putfield_s 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					invokestatic 15;		// javacard/framework/JCSystem.commitTransaction()V
+					return;
+		}
+
+		.method private getBalance(Ljavacard/framework/APDU;)V {
+			.stack 4;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	getstatic_a 17;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.CONNECTION_MGR_AID_BYTES
+					sconst_0;
+					getstatic_a 17;		// reference com/oracle/jcclassic/samples/channels/AccountAccessor.CONNECTION_MGR_AID_BYTES
+					arraylength;
+					s2b;
+					invokestatic 18;		// javacard/framework/JCSystem.lookupAID([BSB)Ljavacard/framework/AID;
+					astore_2;
+				L1:	aload_2;
+					invokestatic 19;		// javacard/framework/JCSystem.isAppletActive(Ljavacard/framework/AID;)Z
+					ifne L3;
+				L2:	sspush 26885;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L3:	aload_1;
+					invokevirtual 9;		// getBuffer()[B
+					astore_3;
+				L4:	aload_1;
+					invokevirtual 20;		// setOutgoing()S
+					sstore 4;
+				L5:	sload 4;
+					sconst_2;
+					if_scmpge L7;
+				L6:	sspush 26368;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	aload_1;
+					sconst_2;
+					invokevirtual 21;		// setOutgoingLength(S)V
+					aload_3;
+					sconst_0;
+					getfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					bspush 8;
+					sshr;
+					s2b;
+					bastore;
+					aload_3;
+					sconst_1;
+					getfield_s_this 1;		// short com/oracle/jcclassic/samples/channels/AccountAccessor.balance
+					sspush 255;
+					sand;
+					s2b;
+					bastore;
+					aload_1;
+					sconst_0;
+					sconst_2;
+					invokevirtual 22;		// sendBytes(SS)V
+					return;
+		}
+
+	}
+
+	.class public ConnectionManager 1 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private short[] activeAreaCode 0;		// [S
+			private byte[] connectionStatus 1;		// [B
+			static final byte CM_CLA = -128;		// B
+			static final byte TIMETICK = 16;		// B
+			static final byte SETCONNECTION = 32;		// B
+			static final byte RESETCONNECTION = 48;		// B
+			static final byte VALIDATEKEY = 64;		// B
+			static final short INACTIVE_AREA = -1;		// S
+			static final byte CONNECTION_INUSE = 1;		// B
+			static final byte CONNECTION_FREE = 0;		// B
+			static final short SW_CONNECTION_BUSY = 27216;		// S
+			static final short SW_NEGATIVE_BALANCE = 27217;		// S
+			static final short SW_NO_NETWORK = 27218;		// S
+			static final short SW_NO_ACCOUNT = 27219;		// S
+			static final short SW_INVALID_KEY = 27220;		// S
+		}
+
+		.publicMethodTable 4 10 {
+			equals(Ljava/lang/Object;)Z 0;
+			register()V 1;
+			register([BSB)V 2;
+			selectingApplet()Z 3;
+			deselect()V 4;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable; 5;
+			select()Z 6;
+			process(Ljavacard/framework/APDU;)V 7;
+			select(Z)Z 255;
+			deselect(Z)V 255;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.implementedInterfaceInfoTable { 
+			.interface 0.17 { 		// javacard/framework/MultiSelectable
+				8;		// select(Z)Z
+				9;		// deselect(Z)V
+			}
+
+			.interface 1.0 { 		// javacardx/apdu/ExtendedLength
+			}
+
+		}
+
+		.method private <init>([BSB)V {
+			.stack 3;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 26;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					sconst_1;
+					sconst_2;
+					invokestatic 23;		// javacard/framework/JCSystem.makeTransientShortArray(SB)[S
+					putfield_a 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					sconst_m1;
+					sastore;
+					aload_0;
+					sconst_1;
+					sconst_2;
+					invokestatic 25;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					aload_0;
+					invokevirtual 27;		// register()V
+					return;
+		}
+
+		.method public static install([BSB)V 0 {
+			.stack 5;
+			.locals 0;
+
+				L0:	new 28;		// com/oracle/jcclassic/samples/channels/ConnectionManager
+					dup;
+					aload_0;
+					sload_1;
+					sload_2;
+					invokespecial 29;		// com/oracle/jcclassic/samples/channels/ConnectionManager.<init>([BSB)V
+					pop;
+					return;
+		}
+
+		.method public select()Z 6 {
+			.stack 1;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 30;		// com/oracle/jcclassic/samples/channels/ConnectionManager.initState()V
+					sconst_1;
+					sreturn;
+		}
+
+		.method public deselect()V 4 {
+			.stack 1;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 31;		// com/oracle/jcclassic/samples/channels/ConnectionManager.clearState()V
+					return;
+		}
+
+		.method public select(Z)Z 8 {
+			.stack 1;
+			.locals 0;
+
+				L0:	sload_1;
+					ifeq L2;
+				L1:	sconst_0;
+					sreturn;
+				L2:	aload_0;
+					invokespecial 30;		// com/oracle/jcclassic/samples/channels/ConnectionManager.initState()V
+					sconst_1;
+					sreturn;
+		}
+
+		.method public deselect(Z)V 9 {
+			.stack 1;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 31;		// com/oracle/jcclassic/samples/channels/ConnectionManager.clearState()V
+					return;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 2;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 9;		// getBuffer()[B
+					astore_2;
+				L1:	aload_1;
+					invokevirtual 10;		// isISOInterindustryCLA()Z
+					ifeq L5;
+				L2:	aload_2;
+					sconst_1;
+					baload;
+					bspush -92;
+					if_scmpne L4;
+				L3:	return;
+				L4:	sspush 28160;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	aload_2;
+					sconst_1;
+					baload;
+					slookupswitch L10 4 16 L7 32 L8 48 L9 64 L6;
+				L6:	aload_0;
+					aload_1;
+					invokespecial 32;		// com/oracle/jcclassic/samples/channels/ConnectionManager.validateKey(Ljavacard/framework/APDU;)V
+					return;
+				L7:	aload_0;
+					aload_1;
+					invokespecial 33;		// com/oracle/jcclassic/samples/channels/ConnectionManager.timeTick(Ljavacard/framework/APDU;)V
+					return;
+				L8:	aload_0;
+					invokespecial 34;		// com/oracle/jcclassic/samples/channels/ConnectionManager.setConnection()V
+					return;
+				L9:	aload_0;
+					invokespecial 35;		// com/oracle/jcclassic/samples/channels/ConnectionManager.resetConnection()V
+					return;
+				L10:	sspush 27904;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+					return;
+		}
+
+		.method private validateKey(Ljavacard/framework/APDU;)V {
+			.stack 6;
+			.locals 6;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 9;		// getBuffer()[B
+					astore_2;
+				L1:	aload_1;
+					invokevirtual 16;		// setIncomingAndReceive()S
+					sstore_3;
+				L2:	aload_1;
+					invokevirtual 36;		// getOffsetCdata()S
+					sstore 4;
+				L3:	sload 4;
+					sconst_4;
+					sadd;
+					newarray 11;
+					astore 5;
+				L4:	aload_2;
+					sconst_0;
+					aload 5;
+					sconst_0;
+					sload 4;
+					sconst_4;
+					sadd;
+					invokestatic 37;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload_2;
+					sconst_5;
+					baload;
+					aload_2;
+					bspush 6;
+					baload;
+					invokestatic 38;		// javacard/framework/Util.makeShort(BB)S
+					sstore 6;
+				L5:	sload_3;
+					sload 6;
+					if_scmpge L11;
+				L6:	aload_1;
+					sconst_0;
+					invokevirtual 39;		// receiveBytes(S)S
+					sstore 7;
+				L7:	sload_3;
+					sload 7;
+					sadd;
+					sstore_3;
+					aload_1;
+					invokevirtual 40;		// getCurrentState()B
+					sconst_2;
+					if_scmpne L10;
+				L8:	sload_3;
+					sload 6;
+					if_scmpeq L10;
+				L9:	sspush 26368;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L10:	goto L5;
+				L11:	aload 5;
+					sload 4;
+					baload;
+					bspush 8;
+					sshl;
+					aload 5;
+					sload 4;
+					sconst_3;
+					sadd;
+					baload;
+					sspush 255;
+					sand;
+					sor;
+					sstore 7;
+				L12:	sload 7;
+					sconst_3;
+					if_scmpeq L14;
+				L13:	sspush 27220;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L14:	return;
+		}
+
+		.method private timeTick(Ljavacard/framework/APDU;)V {
+			.stack 3;
+			.locals 6;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 9;		// getBuffer()[B
+					astore_2;
+				L1:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L2:	aload_1;
+					invokevirtual 16;		// setIncomingAndReceive()S
+					s2b;
+					sstore 4;
+				L3:	sload_3;
+					sconst_2;
+					if_scmpne L5;
+				L4:	sload 4;
+					sconst_2;
+					if_scmpeq L6;
+				L5:	sspush 26368;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	aload_2;
+					sconst_5;
+					baload;
+					bspush 8;
+					sshl;
+					aload_2;
+					bspush 6;
+					baload;
+					sspush 255;
+					sand;
+					sor;
+					sstore 5;
+				L7:	sload 5;
+					sconst_m1;
+					if_scmpeq L9;
+				L8:	getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					sload 5;
+					sastore;
+					goto L10;
+				L9:	aload_0;
+					invokespecial 35;		// com/oracle/jcclassic/samples/channels/ConnectionManager.resetConnection()V
+					sspush 27218;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L10:	invokestatic 41;		// javacard/framework/APDU.getProtocol()B
+					sstore 6;
+				L11:	sconst_0;
+					sstore 7;
+				L12:	sload 6;
+					sspush 240;
+					sand;
+					sspush 128;
+					if_scmpeq L14;
+				L13:	sload 6;
+					sspush 240;
+					sand;
+					sspush 144;
+					if_scmpne L15;
+				L14:	sconst_1;
+					sstore 7;
+				L15:	getfield_a_this 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					sconst_0;
+					baload;
+					sconst_1;
+					if_scmpne L20;
+				L16:	invokestatic 42;		// com/oracle/jcclassic/samples/channels/AccountAccessor.getAccount()Lcom/oracle/jcclassic/samples/channels/AccountAccessor;
+					ifnonnull L18;
+				L17:	sspush 27219;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L18:	invokestatic 42;		// com/oracle/jcclassic/samples/channels/AccountAccessor.getAccount()Lcom/oracle/jcclassic/samples/channels/AccountAccessor;
+					getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					saload;
+					sload 7;
+					invokevirtual 43;		// debit(SZ)Z
+					ifne L20;
+				L19:	aload_0;
+					invokespecial 35;		// com/oracle/jcclassic/samples/channels/ConnectionManager.resetConnection()V
+					sspush 27217;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L20:	return;
+		}
+
+		.method private setConnection()V {
+			.stack 3;
+			.locals 0;
+
+				L0:	invokestatic 42;		// com/oracle/jcclassic/samples/channels/AccountAccessor.getAccount()Lcom/oracle/jcclassic/samples/channels/AccountAccessor;
+					ifnonnull L2;
+				L1:	sspush 27219;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					sconst_0;
+					baload;
+					sconst_1;
+					if_scmpne L4;
+				L3:	sspush 27216;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					saload;
+					sconst_m1;
+					if_scmpne L6;
+				L5:	sspush 27218;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	invokestatic 42;		// com/oracle/jcclassic/samples/channels/AccountAccessor.getAccount()Lcom/oracle/jcclassic/samples/channels/AccountAccessor;
+					getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					saload;
+					sconst_0;
+					invokevirtual 43;		// debit(SZ)Z
+					ifeq L8;
+				L7:	getfield_a_this 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					sconst_0;
+					sconst_1;
+					bastore;
+					goto L9;
+				L8:	sspush 27217;
+					invokestatic 11;		// javacard/framework/ISOException.throwIt(S)V
+				L9:	return;
+		}
+
+		.method private resetConnection()V {
+			.stack 3;
+			.locals 0;
+
+				L0:	getfield_a_this 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					sconst_0;
+					sconst_0;
+					bastore;
+					return;
+		}
+
+		.method private initState()V {
+			.stack 3;
+			.locals 0;
+
+				L0:	getfield_a_this 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					sconst_0;
+					sconst_0;
+					bastore;
+					getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					sconst_m1;
+					sastore;
+					return;
+		}
+
+		.method private clearState()V {
+			.stack 3;
+			.locals 0;
+
+				L0:	getfield_a_this 3;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.activeAreaCode
+					sconst_0;
+					sconst_m1;
+					sastore;
+					getfield_a_this 4;		// reference com/oracle/jcclassic/samples/channels/ConnectionManager.connectionStatus
+					sconst_0;
+					sconst_0;
+					bastore;
+					return;
+		}
+
+	}
+
+}
