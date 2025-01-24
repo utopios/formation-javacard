@@ -35,7 +35,7 @@ public class Scaffolding extends Applet {
             keyData[i] = (byte) (i + 1);
         }
         aesKey.setKey(keyData, (short) 0);
-        aesCipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_CBC_NOPAD, false);
+        aesCipher = Cipher.getInstance(Cipher.ALG_AES_CBC_PKCS5, false);
         register();
     }
 
