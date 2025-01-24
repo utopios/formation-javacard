@@ -19,7 +19,7 @@ public class Scaffolding extends Applet {
     // Champ persistant : stocké en EEPROM
     private short balance;
 
-    private byte[] tempBuffer;
+    private short[] tempBuffer;
 
 
     /**
@@ -29,7 +29,7 @@ public class Scaffolding extends Applet {
         
         balance = 0;
 
-        tempBuffer = JCSystem.makeTransientByteArray((short) 64, JCSystem.CLEAR_ON_RESET);
+        tempBuffer = JCSystem.makeTransientShortArray((short) 64, JCSystem.CLEAR_ON_DESELECT);
         register();
         
     }
@@ -39,6 +39,10 @@ public class Scaffolding extends Applet {
         new Scaffolding();
     }
 
+    public boolean select() {
+        tempBuffer[0] = balance;
+        return true;
+    }
    
    @Override 
    public void process(APDU apdu) {
@@ -95,6 +99,7 @@ public class Scaffolding extends Applet {
         JCSystem.beginTransaction();
         try {
             balance += amount;
+            tempBuffer[0] += amount;
             JCSystem.commitTransaction();
         } catch (Exception e) {
             JCSystem.abortTransaction();
@@ -123,6 +128,7 @@ public class Scaffolding extends Applet {
         JCSystem.beginTransaction();
         try {
             balance -= amount;
+            tempBuffer[0] -= amount;
             JCSystem.commitTransaction();
         } catch (Exception e) {
             JCSystem.abortTransaction();
@@ -134,8 +140,21 @@ public class Scaffolding extends Applet {
         JCSystem.beginTransaction();
         try {
             balance = 0;
+            tempBuffer[0] = 0;
             JCSystem.commitTransaction();
         } catch (Exception e) {
+            JCSystem.abortTransaction();
+            ISOException.throwIt((short) 0x6FFF);
+        }
+    }
+
+
+    public void deselect() {
+        JCSystem.beginTransaction();
+        try {
+            balance = tempBuffer[0];
+            JCSystem.commitTransaction();
+        }catch(Exception ex) {
             JCSystem.abortTransaction();
             ISOException.throwIt((short) 0x6FFF);
         }
