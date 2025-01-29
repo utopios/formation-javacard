@@ -72,9 +72,7 @@ public class ScaffoldingClient {
                     .close();
 
 			// sample script: deploy an Applet, use it and undeploy it.
-			TestScript testScript = new TestScript()
-					.append( deploy )
-	                .append( selectApplet );
+			TestScript testScript = new TestScript();
 			// Terminal to simulator
 			CardTerminal t = getTerminal("socket", "127.0.0.1", "9025"); // or getTerminal("pcsc");
 
@@ -84,15 +82,20 @@ public class ScaffoldingClient {
 				Card c = t.connect("*");
 				System.out.println(getFormattedATR(c.getATR().getBytes()));
 
-				
 
-                
 
                 System.out.println("Entering interactive mode. Type 'exit' to quit.");
-                /*CommandAPDU selectApplet1 = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, AID.from(sAID_AppletInstance).toBytes());
-                ResponseAPDU response1 = c.getBasicChannel().transmit(selectApplet1);
-                printResponse(response1);*/
+                
                 Scanner scanner = new Scanner(System.in);
+                
+                System.out.print("Deploy Applet / (Y/N) : ");
+                String answer = scanner.nextLine();
+                if(answer.equals("Y")) {
+                    testScript.append( deploy );
+                }
+
+                testScript.append( selectApplet );
+
                 while (true) {
                     System.out.print("Enter APDU command: ");
                     String input = scanner.nextLine();
@@ -107,8 +110,17 @@ public class ScaffoldingClient {
                         System.out.println("Invalid APDU command. Try again.");
                     }
                 }
+                
+                System.out.print("UnDeploy Applet / (Y/N) : ");
+                answer = scanner.nextLine();
+                if(answer.equals("Y")) {
+                    testScript.append(undeploy);
+                }
+
                 scanner.close();
-                testScript.append(undeploy);
+
+
+               
 
                 List<ResponseAPDU> responses = testScript.run(c.getBasicChannel());
 				c.disconnect(true);
