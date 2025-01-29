@@ -76,4 +76,10 @@ Les applets doivent communiquer directement entre elles à l'aide des interfaces
    - Le client parle uniquement au **GridApplet**.
    - Les interactions entre les applets (MeterApplet, AggregatorApplet, GridApplet) sont totalement automatisées.
 
+### Etapes:
+
+1. Créer une architecture avec les différents packages, Applets
+2. Identifier les interfaces nécessaires pour le partages
+3. Implémenter les applets
+
 
